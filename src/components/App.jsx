@@ -1,62 +1,49 @@
 import React from 'react';
+import axios from 'axios';
+import Notiflix from 'notiflix';
 import Modal from './Modal/Modal';
-import { Searchbar } from './Searchbar/Searchbar';
-import { Loaader } from './Loader/Loader';
+import Searchbar from './Searchbar/Searchbar';
+import { ToastContainer } from 'react-toastify';
+import { Loader } from './Loader/Loader';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends React.Component {
   state = {
+    images: [],
     showModal: false,
+    loading: false,
   };
-  // searchQuery = '';
-  // page = 1;
-  // PER_PAGE = 40;
 
-  // const fetchGallery = () => {
-  //   const axiosOptions = {
-  //     method: 'get',
-  //     url: 'https://pixabay.com/api/',
-  //     params: {
-  //       key: '35072085-a0b1b3afc3e4ed85b172a35ba',
-  //       q: `${this.searchQuery}`,
-  //       image_type: 'photo',
-  //       orientation: 'horizontal',
-  //       safesearch: true,
-  //       page: `${this.page}`,
-  //       per_page: `${this.PER_PAGE}`,
-  //     },
-  //   };
-  //   try {
-  //     const response = axios(axiosOptions);
+  async fetchGallery() {
+    const axiosOptions = {
+      method: 'get',
+      url: 'https://pixabay.com/api/',
+      params: {
+        key: '35072085-a0b1b3afc3e4ed85b172a35ba',
+        q: `${this.searchQuery}`,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        page: `${this.page}`,
+        per_page: `${this.PER_PAGE}`,
+      },
+    };
+    try {
+      const response = await axios(axiosOptions);
 
-  //     this.incrementPage();
-  //     return response.data;
-  //   } catch {
-  //     console.log('Помилка!');
-  //   }
-  // };
-
-  // incrementPage = () => {
-  //   this.page += 1;
-  // };
-
-  // resetPage = () => {
-  //   this.page = 1;
-  // };
-
-  // resetEndOfHits = () => {
-  //   this.endOfHits = false;
-  // };
-  // hasMoreImages = () => {
-  //   return this.page === Math.ceil(this.totalPages / this.per_page);
-  // };
-
-  // getquery = () => {
-  //   return this.searchQuery;
-  // };
-
-  // setquery = newQuery => {
-  //   this.searchQuery = newQuery;
-  // };
+      this.incrementPage();
+      return response.data;
+    } catch {
+      console.log('Помилка!');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+      // refs.loadMoreEl.classList.add('is-hidden');
+    }
+  }
+  handleFormSubmit = imageName => {
+    console.log(imageName);
+  };
   toggleModal = () => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
@@ -67,8 +54,9 @@ export class App extends React.Component {
     const { showModal } = this.state;
     return (
       <div>
-        <Searchbar />
-        <Loaader />
+        <Searchbar onSubmit={this.handleFormSubmit} />
+        {this.state.loading && <Loader />}
+        {this.state.images.lenght && this.state.images}
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src="" alt="" />
@@ -77,6 +65,7 @@ export class App extends React.Component {
             </button>
           </Modal>
         )}
+        <ToastContainer autoClose={3000} />
       </div>
     );
   }
