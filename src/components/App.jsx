@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from './Modal/Modal';
+import { Searchbar } from './Searchbar/Searchbar';
 
 export class App extends React.Component {
   state = {
@@ -64,19 +65,8 @@ export class App extends React.Component {
   render() {
     const { showModal } = this.state;
     return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 40,
-          color: '#010101',
-        }}
-      >
-        <button type="buton" onClick={this.toggleModal}>
-          open modal
-        </button>
+      <div>
+        <Searchbar />
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src="" alt="" />
