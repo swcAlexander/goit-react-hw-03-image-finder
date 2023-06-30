@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from './Modal/Modal';
 import { Searchbar } from './Searchbar/Searchbar';
+import { Loaader } from './Loader/Loader';
 
 export class App extends React.Component {
   state = {
@@ -67,6 +68,7 @@ export class App extends React.Component {
     return (
       <div>
         <Searchbar />
+        <Loaader />
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src="" alt="" />
