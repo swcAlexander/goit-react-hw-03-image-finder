@@ -1,24 +1,24 @@
 import axios from 'axios';
-import Notiflix from 'notiflix';
+import { toast } from 'react-toastify';
+import { LoadMoreBtn } from 'components/Button/Button';
 
 export default class NewsApiService {
   constructor() {
     this.searchQuery = '';
-    this.page = 1;
     this.totalPages = 0;
     this.PER_PAGE = 40;
   }
-  async fetchGallery() {
+  async fetchGallery(imageName, currentPage) {
     const axiosOptions = {
       method: 'get',
       url: 'https://pixabay.com/api/',
       params: {
         key: '35072085-a0b1b3afc3e4ed85b172a35ba',
-        q: `${this.searchQuery}`,
+        q: `${imageName}`,
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: true,
-        page: `${this.page}`,
+        page: `${currentPage}`,
         per_page: `${this.PER_PAGE}`,
       },
     };
@@ -29,10 +29,8 @@ export default class NewsApiService {
       return response.data;
     } catch {
       console.log('Помилка!');
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-      refs.loadMoreEl.classList.add('is-hidden');
+      toast.info("We're sorry, but you've reached the end of search results.");
+      LoadMoreBtn.disable();
     }
   }
 

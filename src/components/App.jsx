@@ -1,62 +1,84 @@
 import React from 'react';
-import axios from 'axios';
-import Notiflix from 'notiflix';
 import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
+// import NewsApiService from './ApiServise/ApiServise';
+// import { LoadMoreBtn } from 'components/Button/Button';
 import { ToastContainer } from 'react-toastify';
 import { Loader } from './Loader/Loader';
 import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends React.Component {
   state = {
+    searchQuery: '',
     images: [],
+    currentPage: 1,
     showModal: false,
-    loading: false,
+    status: 'idle',
   };
 
-  async fetchGallery() {
-    const axiosOptions = {
-      method: 'get',
-      url: 'https://pixabay.com/api/',
-      params: {
-        key: '35072085-a0b1b3afc3e4ed85b172a35ba',
-        q: `${this.searchQuery}`,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-        page: `${this.page}`,
-        per_page: `${this.PER_PAGE}`,
-      },
-    };
-    try {
-      const response = await axios(axiosOptions);
-
-      this.incrementPage();
-      return response.data;
-    } catch {
-      console.log('Помилка!');
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-      // refs.loadMoreEl.classList.add('is-hidden');
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.fetchImages();
     }
   }
-  handleFormSubmit = imageName => {
-    console.log(imageName);
+
+  fetchImages = async () => {
+    const { searchQuery, currentPage } = this.state;
+    const apiKey = '35072085-a0b1b3afc3e4ed85b172a35ba';
+
+    try {
+      const response = await fetch(
+        `https://pixabay.com/api/?q=${searchQuery}&page=${currentPage}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
+      );
+      const data = await response.json();
+      this.setState(prevState => ({
+        images: [...prevState.images, ...data.hits],
+        status: 'resolved',
+      }));
+    } catch (error) {
+      console.error('Error fetching images:', error);
+    }
   };
   toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,
     }));
   };
 
+  loadMore = () => {
+    this.setState(
+      prevState => ({
+        currentPage: prevState.currentPage + 1,
+      }),
+      () => {
+        this.fetchImages();
+      }
+    );
+  };
+  // прокидуємо введені дані з форми:
+  hundleImputChange = searchQuery => {
+    this.setState({ searchQuery });
+  };
+
   render() {
-    const { showModal } = this.state;
+    const { showModal, status } = this.state;
     return (
       <div>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        {this.state.loading && <Loader />}
-        {this.state.images.lenght && this.state.images}
+        <Searchbar onSubmit={this.hundleImputChange} />
+        {status === 'panding ' && <Loader />}
+        {/* {status === 'resolved' && images} */}
+        <div>
+          {this.state.images.map(image => (
+            <img key={image.id} src={image.webformatURL} alt={image.tags} />
+          ))}
+        </div>
+        {/* Показати кнопку "Load More" тільки якщо є ще зображення */}
+        {this.state.images.length > 0 && (
+          <button type="button" onClick={this.loadMore}>
+            Load More
+          </button>
+        )}
+
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src="" alt="" />
