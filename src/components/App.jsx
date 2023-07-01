@@ -1,8 +1,7 @@
 import React from 'react';
 import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
-// import NewsApiService from './ApiServise/ApiServise';
-// import { LoadMoreBtn } from 'components/Button/Button';
+import { LoadMoreBtn } from 'components/Button/Button';
 import { ToastContainer } from 'react-toastify';
 import { Loader } from './Loader/Loader';
 import 'react-toastify/dist/ReactToastify.css';
@@ -39,6 +38,7 @@ export class App extends React.Component {
       console.error('Error fetching images:', error);
     }
   };
+
   toggleModal = () => {
     this.setState(prevState => ({
       showModal: !prevState.showModal,
@@ -55,8 +55,9 @@ export class App extends React.Component {
       }
     );
   };
+
   // прокидуємо введені дані з форми:
-  hundleImputChange = searchQuery => {
+  handleInputChange = searchQuery => {
     this.setState({ searchQuery });
   };
 
@@ -64,25 +65,20 @@ export class App extends React.Component {
     const { showModal, status } = this.state;
     return (
       <div>
-        <Searchbar onSubmit={this.hundleImputChange} />
-        {status === 'panding ' && <Loader />}
-        {/* {status === 'resolved' && images} */}
+        <Searchbar onSubmit={this.handleInputChange} />
+        {status === 'pending' && <Loader />}
         <div>
           {this.state.images.map(image => (
             <img key={image.id} src={image.webformatURL} alt={image.tags} />
           ))}
         </div>
-        {/* Показати кнопку "Load More" тільки якщо є ще зображення */}
         {this.state.images.length > 0 && (
-          <button type="button" onClick={this.loadMore}>
-            Load More
-          </button>
+          <LoadMoreBtn type="button" onClick={this.loadMore}></LoadMoreBtn>
         )}
-
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src="" alt="" />
-            <button type="buton" onClick={this.toggleModal}>
+            <button type="button" onClick={this.toggleModal}>
               close modal
             </button>
           </Modal>
