@@ -4,6 +4,7 @@ import Searchbar from './Searchbar/Searchbar';
 import { LoadMoreBtn } from 'components/Button/Button';
 import { ToastContainer } from 'react-toastify';
 import { Loader } from './Loader/Loader';
+import { ImageGallery } from 'components/ImageGallery/ImageGallery';
 import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends React.Component {
@@ -67,11 +68,8 @@ export class App extends React.Component {
       <div>
         <Searchbar onSubmit={this.handleInputChange} />
         {status === 'pending' && <Loader />}
-        <div>
-          {this.state.images.map(image => (
-            <img key={image.id} src={image.webformatURL} alt={image.tags} />
-          ))}
-        </div>
+        <ImageGallery images={this.state.images} />
+
         {this.state.images.length > 0 && (
           <LoadMoreBtn type="button" onClick={this.loadMore}></LoadMoreBtn>
         )}

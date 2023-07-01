@@ -1,9 +1,16 @@
-import React from "react";
+import React from 'react';
+import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 
-const SmageGallery = () => {
-    return (
-        <ul class="gallery">
-            {/* <!-- Набір <li> із зображеннями --> */}
-        </ul>
-    )
-}
+export const ImageGallery = ({ images }) => {
+  return (
+    <ul className="gallery">
+      {images.map(image => (
+        <ImageGalleryItem
+          key={image.id}
+          imgUrl={image.webformatURL}
+          alt={image.tags}
+        />
+      ))}
+    </ul>
+  );
+};

@@ -1,9 +1,9 @@
 import React from 'react';
 
-const ImageGalleryItem = ({ imgUrl }) => {
-  renurn(
-    <li class="gallery-item">
-      <img src={imgUrl} alt="" />
+export const ImageGalleryItem = ({ imgUrl, alt }) => {
+  return (
+    <li className="gallery-item">
+      <img src={imgUrl} alt={alt} />
     </li>
   );
 };
