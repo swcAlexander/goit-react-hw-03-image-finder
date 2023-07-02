@@ -56,7 +56,10 @@ export class App extends React.Component {
         );
       }
     } catch (error) {
-      toast.error('Error fetching images:', error);
+      console.error(
+        `Error fetching images: ${error}`,
+        this.setState({ status: 'rejected' })
+      );
     }
   };
   loadMore = () => {
@@ -91,7 +94,7 @@ export class App extends React.Component {
             {!shouldHideLoadMore && <LoadMoreBtn onClick={this.loadMore} />}
           </>
         )}
-        {status === 'rejected' && <ToastContainer autoClose={3000} />}
+        <ToastContainer autoClose={3000} />
       </div>
     );
   }
