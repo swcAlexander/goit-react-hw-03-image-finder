@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ImSearch } from 'react-icons/im';
 import { toast } from 'react-toastify';
 import styles from 'components/Searchbar/Searchbar.module.css';
@@ -23,15 +24,15 @@ export default class Searchbar extends React.Component {
   render() {
     return (
       <header className={styles.searchbar}>
-        <form className="form" onSubmit={this.hundleSumbit}>
-          <button type="submit" className="button">
+        <form className={styles.form} onSubmit={this.hundleSumbit}>
+          <button type="submit" className={styles.button}>
             <ImSearch />
           </button>
 
           <input
             onChange={this.handleNameChange}
             value={this.state.imageName}
-            className="input"
+            className={styles.input}
             type="text"
             autoComplete="off"
             autoFocus
@@ -42,3 +43,7 @@ export default class Searchbar extends React.Component {
     );
   }
 }
+
+Searchbar.prpoTpes = {
+  onSubmit: PropTypes.func.isRequired,
+};

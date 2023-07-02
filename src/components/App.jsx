@@ -1,10 +1,10 @@
 import React from 'react';
-import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
 import { LoadMoreBtn } from 'components/Button/Button';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { Loader } from './Loader/Loader';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery';
+import { animateScroll as scroll } from 'react-scroll';
 import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends React.Component {
@@ -14,10 +14,12 @@ export class App extends React.Component {
     currentPage: 1,
     showModal: false,
     status: 'idle',
+    shouldHideLoadMore: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
+      this.setState({ images: [] });
       this.fetchImages();
     }
   }
@@ -25,27 +27,38 @@ export class App extends React.Component {
   fetchImages = async () => {
     const { searchQuery, currentPage } = this.state;
     const apiKey = '35072085-a0b1b3afc3e4ed85b172a35ba';
-
+    this.setState({ status: 'pending' });
     try {
       const response = await fetch(
         `https://pixabay.com/api/?q=${searchQuery}&page=${currentPage}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
       );
       const data = await response.json();
-      this.setState(prevState => ({
-        images: [...prevState.images, ...data.hits],
-        status: 'resolved',
-      }));
+      this.setState(
+        prevState => ({
+          images: [...prevState.images, ...data.hits],
+          status: 'resolved',
+        }),
+        () => {
+          const { totalHits, images } = this.state;
+          const shouldHideLoadMore =
+            totalHits === images.length || images.length < 12;
+
+          this.setState({
+            shouldHideLoadMore: shouldHideLoadMore,
+          });
+        }
+      );
+
+      if (data.hits.length === 0) {
+        return toast.info(
+          'Sorry images not found...',
+          this.setState({ status: 'rejected' })
+        );
+      }
     } catch (error) {
-      console.error('Error fetching images:', error);
+      toast.error('Error fetching images:', error);
     }
   };
-
-  toggleModal = () => {
-    this.setState(prevState => ({
-      showModal: !prevState.showModal,
-    }));
-  };
-
   loadMore = () => {
     this.setState(
       prevState => ({
@@ -53,35 +66,32 @@ export class App extends React.Component {
       }),
       () => {
         this.fetchImages();
+        this.scrollToBottom();
       }
     );
   };
 
-  // прокидуємо введені дані з форми:
   handleInputChange = searchQuery => {
     this.setState({ searchQuery });
   };
 
+  scrollToBottom() {
+    scroll.scrollToBottom();
+  }
+
   render() {
-    const { showModal, status } = this.state;
+    const { status, shouldHideLoadMore } = this.state;
     return (
-      <div>
+      <div className="container">
         <Searchbar onSubmit={this.handleInputChange} />
         {status === 'pending' && <Loader />}
-        <ImageGallery images={this.state.images} />
-
-        {this.state.images.length > 0 && (
-          <LoadMoreBtn type="button" onClick={this.loadMore}></LoadMoreBtn>
+        {status === 'resolved' && (
+          <>
+            <ImageGallery images={this.state.images} />
+            {!shouldHideLoadMore && <LoadMoreBtn onClick={this.loadMore} />}
+          </>
         )}
-        {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <img src="" alt="" />
-            <button type="button" onClick={this.toggleModal}>
-              close modal
-            </button>
-          </Modal>
-        )}
-        <ToastContainer autoClose={3000} />
+        {status === 'rejected' && <ToastContainer autoClose={3000} />}
       </div>
     );
   }
