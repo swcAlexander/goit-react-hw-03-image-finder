@@ -22,13 +22,6 @@ export default class ImageGalleryItem extends React.Component {
         </li>
         {showModal && (
           <Modal onClose={this.toggleModal}>
-            <button
-              type="button"
-              onClick={this.toggleModal}
-              className={styles.modal_button}
-            >
-              x
-            </button>
             <img
               src={largeImageURL}
               alt={alt}

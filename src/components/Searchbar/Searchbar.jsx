@@ -9,7 +9,6 @@ export default class Searchbar extends React.Component {
     imageName: '',
   };
   handleNameChange = event => {
-    event.preventDefault();
     this.setState({ imageName: event.currentTarget.value.toLowerCase() });
   };
   hundleSumbit = event => {

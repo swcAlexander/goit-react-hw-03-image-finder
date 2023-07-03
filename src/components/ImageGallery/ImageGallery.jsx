@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import styles from 'components/ImageGallery/ImageGallery.module.css';
 
-export const ImageGallery = ({ images, toggleModal }) => {
+export const ImageGallery = ({ images }) => {
   return (
     <ul className={styles.gallery_list}>
       {images.map(({ id, webformatURL, largeImageURL, tags }) => (
@@ -12,7 +12,6 @@ export const ImageGallery = ({ images, toggleModal }) => {
           imgUrl={webformatURL}
           largeImageURL={largeImageURL}
           alt={tags}
-          onClick={toggleModal}
         />
       ))}
     </ul>
@@ -28,5 +27,4 @@ ImageGallery.propTypes = {
       tags: PropTypes.string.isRequired,
     })
   ),
-  toggleModal: PropTypes.func,
 };
